@@ -1,0 +1,136 @@
+﻿<UserControl x:Class="GuiApplication.EntriesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:GuiApplication"
+             xmlns:forms="clr-namespace:GuiApplication.PopupForms"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      x:Name="Entries" 
+            Loaded="Entries_Loaded"
+      >
+    <UserControl.Resources>
+        <local:FileNameConverter x:Key="stringConverter"/>
+
+        <CollectionViewSource x:Key="EntriesFilesValidated" Source="{Binding Source={x:Reference Entries}, Path=AllEntries, UpdateSourceTrigger=PropertyChanged}"  Filter="EntriesFilesValidated_Filter"/>
+        <!--<CollectionViewSource x:Key="EntitiesGroupingsValidated" Source="{Binding Source={StaticResource EntriesFilesValidated}}" Filter="EntitiesGroupingsValidated_Filter"/>-->
+
+       <!-- <CompositeCollection x:Key="EntitiesGroupingsComposite">
+            <CollectionViewSource Source="{Binding Source={StaticResource EntriesFilesValidated}, Path=View.CurrentItem}" />
+        </CompositeCollection>-->
+        <!--<CompositeCollection x:Key="CampsAndGroups">
+            <CollectionViewSource 
+        </CompositeCollection> -->
+        <!--<CollectionViewSource x:Key="IndividuallyFilteredItems" Source="{Binding Source={StaticResource EntriesFilesValidated}, Path=View.CurrentItem}"-->
+        
+    </UserControl.Resources>
+    
+    <DockPanel x:Name="Dock">
+        <Label HorizontalContentAlignment="Center" Name="EntriesGroupingHeader" Content="{Binding ElementName=Entries, Path=ActiveCategory}" DockPanel.Dock="Top" FontSize="20" Margin="0, 2, 0, 5"/>
+        <Separator DockPanel.Dock="Top" />
+        <Menu DockPanel.Dock="Top" HorizontalAlignment="left" BorderBrush="Black" Height="25" Width="{Binding ElementName=Dock,Path=ActualWidth}">
+            <MenuItem Header="_New" x:Name="NewMenuItem">
+                <!--<MenuItem Header="New _Campaign"/>
+                <MenuItem Header="New _Group"/>-->
+                <MenuItem Header="New _File" Click="NewFileMenuButton_Clicked"/>
+            </MenuItem>
+            
+            <MenuItem Header="_Files">
+                <MenuItem Header="Manage _Active Files" x:Name="ManageFilesSubHead" ItemsSource="{Binding ElementName=Entries, Path=AllFiles}" SubmenuClosed="FileManager_Close">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem">
+                            <Setter Property="Header" Value="{Binding Converter={StaticResource stringConverter}}"/>
+                            <Setter Property="IsCheckable" Value="True"/>
+                            
+                            <Setter Property="StaysOpenOnClick" Value="True"/>
+                            <EventSetter Event="Loaded" Handler="MenuItem_Loaded"/>
+                            <EventSetter Event="Checked" Handler="ActiveFileButton_Checked"/>
+                            <EventSetter Event="Unchecked" Handler="ActiveFileButton_Unchecked"/>
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                    
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Save" x:Name="SaveMenuItem">
+                <MenuItem Header="_Save To Origin Files" Click="SaveToOrigins_Click"/>
+                <MenuItem Header="Save As _New File" Click="SaveToNew_Click"/>
+            </MenuItem>
+        </Menu>
+        <forms:NewFilePopup x:Name="NewPopup" IsOpen="False" PlacementTarget="{Binding ElementName=NewMenuItem}" Placement="Bottom"/>
+        <forms:NewFilePopup x:Name="SaveToNewPopup" IsOpen="False" PlacementTarget="{Binding ElementName=SaveMenuItem}" Placement="Bottom"/>
+        <forms:NewEntryPopup x:Name="EntryPopup" IsOpen="False" PlacementTarget="{Binding ElementName=NewEntryButton}" AllFiles="{Binding ElementName=Entries, Path=ActiveFiles}" Placement="Bottom"/>
+
+        <ToolBar Height="60" DockPanel.Dock="Top">
+            
+            <Button Content="New Entry" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch" Click="NewEntry_Click" x:Name="NewEntryButton"/>
+            <Button Margin="10,0,10,0" Width="80" VerticalAlignment="Stretch" IsEnabled="false">
+                <StackPanel Orientation="Vertical">
+                <TextBlock HorizontalAlignment="Center" TextWrapping="WrapWithOverflow" >Add Entries</TextBlock>
+                    <TextBlock HorizontalAlignment="Center">To View</TextBlock>
+                </StackPanel></Button>
+            <Button Content="Delete Entries" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch" x:Name="DeleteEntriesButton" Click="DeleteEntries_Click"/>
+            <Button Content="Deselect All" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch" x:Name="DeselectEntriesButton" Click="DeselectEntries_Click"/>
+            <Separator/>
+            <StackPanel Orientation="Vertical" Margin="25,0,10,0" IsEnabled="false">
+                <Label Content="Filter By Name:"/>
+                <TextBox  VerticalAlignment="Center" BorderThickness="0.5" BorderBrush="#69000000" Text="" FontSize="14" Width="165" Padding="2,0,2,0" x:Name="SearchFilter" TextChanged="SearchFilter_TextChanged">
+
+                </TextBox>
+            </StackPanel>
+        </ToolBar>
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                
+                <WrapPanel Orientation="Horizontal">
+                    <TextBlock x:Name="StatusBarLabel" Text="File(s) loaded: "/>
+                    <ItemsControl ItemsSource="{Binding ElementName=Entries, Path=ActiveFiles}" >
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/></ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Margin="0,0,5,0" Text="{Binding Path=., Converter={StaticResource stringConverter}}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </WrapPanel>
+            </StatusBarItem>
+        </StatusBar>
+        <ScrollViewer HorizontalAlignment="Center" VerticalScrollBarVisibility="Auto" Margin="0,10,0,10">
+            <ItemsControl x:Name="ComponentBox" Margin="10,0,10,0" ItemsSource="{Binding Source={StaticResource EntriesFilesValidated}}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+
+                        <ItemsControl x:Name="EntityComponentDisplayBox" ItemsSource="{Binding Path=Entities}">
+
+
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    
+                                        <local:EntityComponent x:Name="entcom" RepresentedEntity="{Binding}" SingleEntryEvent="MidPointBubbleEventMethod" Loaded="Component_LoadBoxes" BubbleCheckboxCheckedEvent="ComponentChecked" BubbleCheckboxUncheckedEvent="ComponentUnchecked">
+
+                                        </local:EntityComponent>
+                                    
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+
+
+
+                        </ItemsControl>
+
+
+                    </DataTemplate></ItemsControl.ItemTemplate>
+                   
+               
+            </ItemsControl>
+        </ScrollViewer>
+
+    </DockPanel>
+<!--</TabItem>-->
+</UserControl>
+

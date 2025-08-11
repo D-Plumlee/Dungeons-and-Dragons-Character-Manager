@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Authors>Donovan Plumlee</Authors>
+    <Company>None</Company>
+    <Description>A library with a class that represents a character sheet in Dungeons and Dragons, as well as helper classes for representing data and for storing it to XML files.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include=".Inventory\Armor.cs" />
+    <Compile Include=".Inventory\ArmorTypeEnum.cs" />
+    <Compile Include=".Inventory\EquippedComparer.cs" />
+    <Compile Include=".Inventory\InventoryAsFourLists.cs" />
+    <Compile Include=".Inventory\Item.cs" />
+    <Compile Include=".Inventory\Shield.cs" />
+    <Compile Include=".Inventory\Weapon.cs" />
+    <Compile Include=".Inventory\WeaponTypeEnum.cs" />
+    <Compile Include=".SpellList\Ability.cs" />
+    <Compile Include=".SpellList\MagicEffect.cs" />
+    <Compile Include=".SpellList\Spell.cs" />
+    <Compile Include=".SpellList\SpellListAsTwoLists.cs" />
+    <Compile Include=".SpellList\Trait.cs" />
+  </ItemGroup>
+
+</Project>

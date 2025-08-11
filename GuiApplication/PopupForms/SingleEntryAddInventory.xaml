@@ -1,0 +1,114 @@
+﻿<Window x:Class="GuiApplication.PopupForms.SingleEntryAddInventory"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GuiApplication.PopupForms"
+        xmlns:libinv="clr-namespace:DnDEntityLibrary.Inventory;assembly=DnDEntityLibrary"
+        mc:Ignorable="d"
+        x:Name="ItemPopup"
+        Title="Add New Inventory Item" Height="441" Width="439">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="37*"/>
+            <RowDefinition Height="52*"/>
+            <RowDefinition Height="81*"/>
+            <RowDefinition Height="264*"/>
+        </Grid.RowDefinitions>
+
+        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="0">
+            <Label FontWeight="Bold" Margin="0,0,35,0" FontSize="16" Content="Type to add:"/>
+            <Button Margin="10,5,10,5" Content="Confirm" Click="Confirm_Click"/>
+            <Button Margin="10,5,10,5" Content="Cancel" Click="Cancel_Click"/>
+        </WrapPanel>
+        <WrapPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+            <RadioButton Margin="0,0,15,0" x:Name="WeaponButton" Content="Weapon" Checked="WeaponButton_Checked" Unchecked="WeaponButton_Unchecked" />
+            <RadioButton Margin="15,0,15,0" x:Name="ShieldButton" Content="Shield" Checked="ShieldButton_Checked" Unchecked="ShieldButton_Unchecked" />
+            <RadioButton Margin="15,0,15,0" x:Name="ArmorButton" Content="Armor" Checked="ArmorButton_Checked" Unchecked="ArmorButton_Unchecked"/>
+            <RadioButton Margin="15,0,0,0" x:Name="ItemButton" IsChecked="True" Content="Item"/>
+        </WrapPanel>
+        <WrapPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+            <StackPanel Margin="0,15,15,0" Orientation="Vertical">
+                <Label Content="Name:"/>
+                <TextBox x:Name="NameField" MinWidth="125"/>
+            </StackPanel>
+            <StackPanel Margin="25,0,0,0" Orientation="Vertical">
+                <Label Content="Effect (Or Description):"/>
+                <TextBox x:Name="EffectField" Width="150" Height="50"/>
+            </StackPanel>
+        </WrapPanel>
+        <StackPanel x:Name="WeaponFields" Visibility="Collapsed" Grid.Row="3" HorizontalAlignment="Center" Margin="0,15,0,0" Orientation="Vertical">
+            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+
+                <CheckBox Margin="15,15,40,15" IsChecked="{Binding ElementName=ItemPopup, Path=NewWeapon.IsMagic}" Content="Magic Item?"/>
+                <CheckBox Margin="45,15,25,15" IsChecked="{Binding ElementName=ItemPopup, Path=NewWeapon.Equipped}" Content="Equipped?"/>
+            </WrapPanel>
+            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <StackPanel Margin="0,0,40,15" Orientation="Vertical">
+                    <Label Content="Style:"/>
+                    <ComboBox x:Name="WeaponStyleBox" MinWidth="100">
+                        <ComboBoxItem Content="One Handed" IsSelected="True"/>
+                        <ComboBoxItem Content="Two Handed" />
+                        <ComboBoxItem Content="Versatile" />
+                    </ComboBox>
+                </StackPanel>
+                 
+                <StackPanel Margin="35,0,20,15" Orientation="Vertical">
+                    <Label Content="Hit Modifier:"/>
+                    <TextBox MaxLength="1" Width="25" HorizontalContentAlignment="Center" Text="{Binding ElementName=ItemPopup, Path=NewWeapon.HitModifier}"/>
+                </StackPanel>
+            </WrapPanel>
+            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <StackPanel Margin="0,0,40,0" Orientation="Vertical">
+                    <StackPanel.ToolTip>
+                        <TextBlock>For example: 1 D4</TextBlock>
+                    </StackPanel.ToolTip>
+                    <Label Content="Damage:"/>
+                    <TextBox Text="{Binding ElementName=ItemPopup, Path=NewWeapon.HitDamage}" MinWidth="125"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel.ToolTip>
+                        <TextBlock>Blunt, Piercing, etc.</TextBlock>
+                    </StackPanel.ToolTip>
+                    <Label Content="Damage Type:"/>
+                    <TextBox Text="{Binding ElementName=ItemPopup, Path=NewWeapon.DamageType}" MinWidth="125"/>
+                </StackPanel>
+            </WrapPanel>
+        </StackPanel>
+
+        <StackPanel x:Name="ShieldFields" Visibility="Collapsed" Grid.Row="3" HorizontalAlignment="Center" Margin="0,15,0,0" Orientation="Vertical">
+            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+
+                <StackPanel Margin="0,10,20,15" Orientation="Horizontal">
+                    <Label Content="Armor Class Bonus:"/>
+                    <TextBox MaxLength="1" Width="25" HorizontalContentAlignment="Center" Text="{Binding ElementName=ItemPopup, Path=NewShield.ArmorClassBonus}"/>
+                </StackPanel>
+                <CheckBox Margin="45,15,45,15" IsChecked="{Binding ElementName=ItemPopup, Path=NewShield.Equipped}" Content="Equipped?"/>
+            </WrapPanel>
+        </StackPanel>
+
+
+        <StackPanel x:Name="ArmorFields" Visibility="Collapsed"  Grid.Row="3" HorizontalAlignment="Center" Margin="0,15,0,0" Orientation="Vertical">
+            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+
+                <StackPanel Margin="0,10,25,15" Orientation="Horizontal">
+                    <Label Content="Base Armor Class:"/>
+                    <TextBox MaxLength="1" Width="25" HorizontalContentAlignment="Center" Text="{Binding ElementName=ItemPopup, Path=NewArmor.BaseArmorClass}"/>
+                </StackPanel>
+                <CheckBox Margin="45,15,45,15" IsChecked="{Binding ElementName=ItemPopup, Path=NewArmor.Equipped}" Content="Equipped?"/>
+            </WrapPanel>
+            <WrapPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <StackPanel Margin="10" Orientation="Vertical">
+                    <Label Content="Armor Type:"/>
+                    <ComboBox x:Name="ArmorStyleBox" MinWidth="110">
+                        <ComboBoxItem Content="Light Armor" IsSelected="True"/>
+                        <ComboBoxItem Content="Medium Armor" />
+                        <ComboBoxItem Content="Heavy Armor" />
+                    </ComboBox>
+                </StackPanel>
+
+                
+            </WrapPanel>
+        </StackPanel>
+    </Grid>
+</Window>

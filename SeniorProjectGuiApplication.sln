@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36301.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuiApplication", "GuiApplication\GuiApplication.csproj", "{B1BDEF4A-5BFF-427C-BCF1-E72AF29A7EF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DnDEntityLibrary", "DnDEntityLibrary\DnDEntityLibrary.csproj", "{9B7A6328-BF14-4892-A74B-34A1C19680E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B1BDEF4A-5BFF-427C-BCF1-E72AF29A7EF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1BDEF4A-5BFF-427C-BCF1-E72AF29A7EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1BDEF4A-5BFF-427C-BCF1-E72AF29A7EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1BDEF4A-5BFF-427C-BCF1-E72AF29A7EF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B7A6328-BF14-4892-A74B-34A1C19680E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B7A6328-BF14-4892-A74B-34A1C19680E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B7A6328-BF14-4892-A74B-34A1C19680E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B7A6328-BF14-4892-A74B-34A1C19680E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {238353E6-8E31-4AB8-8CC0-740AA2A25E42}
+	EndGlobalSection
+EndGlobal

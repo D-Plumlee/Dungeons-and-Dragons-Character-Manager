@@ -1,0 +1,79 @@
+﻿<Window x:Class="GuiApplication.PopupForms.SingleEntryAddSpell"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GuiApplication.PopupForms"
+        mc:Ignorable="d"
+        x:Name="SpellPopup"
+Title="Add New SpellBook Item" Height="441" Width="439">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="36*"/>
+            <RowDefinition Height="51*"/>
+            <RowDefinition Height="79*"/>
+            <RowDefinition Height="62*"/>
+            <RowDefinition Height="197*"/>
+        </Grid.RowDefinitions>
+
+        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="32" Width="263">
+            <Label FontWeight="Bold" Margin="0,0,25,0" FontSize="16" Content="Type to add:"/>
+            <Button Margin="10,5,10,5" Content="Confirm" Click="Confirm_Click"/>
+            <Button Margin="10,5,10,5" Content="Cancel" Click="Cancel_Click"/>
+        </WrapPanel>
+        <WrapPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" Height="15" Width="269">
+            <RadioButton Margin="0,0,10,0" x:Name="SpellButton" Content="Spell" Checked="SpellButton_Checked" Unchecked="SpellButton_Unchecked" />
+            <RadioButton Margin="10,0,10,0" x:Name="AbilityButton" Content="Ability" Checked="AbilityButton_Checked" Unchecked="AbilityButton_Unchecked" />
+            <RadioButton Margin="10,0,10,0" x:Name="TraitButton" Content="Trait"/>
+            <RadioButton Margin="10,0,0,0" x:Name="FeatButton" IsChecked="True" Content="Feat"/>
+        </WrapPanel>
+        <WrapPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal" Height="77" Width="315">
+            <StackPanel Margin="0,15,15,0" Orientation="Vertical">
+                <Label Content="Name:"/>
+                <TextBox x:Name="NameField" MinWidth="125"/>
+            </StackPanel>
+            <StackPanel Margin="25,0,0,0" Orientation="Vertical">
+                <Label Content="Effect (Or Description):"/>
+                <TextBox x:Name="EffectField" Width="150" Height="50"/>
+            </StackPanel>
+        </WrapPanel>
+
+        <WrapPanel Grid.Row="3" VerticalAlignment="Center" Visibility="Collapsed" HorizontalAlignment="Center" Orientation="Horizontal" x:Name="MagicEffectFields">
+            <StackPanel x:Name="AbilityFields" Visibility="Collapsed" Orientation="Vertical" Width="37">
+                <Label Content="Uses:"/>
+                <TextBox MaxLength="2" Width="25" HorizontalContentAlignment="Center" Text="{Binding ElementName=SpellPopup,Path=NewAbility.Uses}"/>
+            </StackPanel>
+            <StackPanel x:Name="SpellLevelFields" Visibility="Collapsed" Orientation="Vertical" Width="37">
+                <StackPanel.ToolTip>
+                    <TextBlock Text="Spell Level. 0 for cantrips."/>
+                </StackPanel.ToolTip>
+                <Label HorizontalAlignment="Center" Content="lvl:"/>
+                <TextBox MaxLength="1" Width="25" HorizontalContentAlignment="Center" Text="{Binding ElementName=SpellPopup, Path=NewSpell.Level}"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="30,0,20,0">
+                <StackPanel.ToolTip>
+                    <TextBlock Text="e.g., self, 15ft cone, 30ft cylinder..."/>
+                </StackPanel.ToolTip>
+                <Label Content="Area of Effect" HorizontalAlignment="Center"/>
+                <TextBox x:Name="AOEField" MinWidth="100"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical">
+                <Label Content="Duration" HorizontalAlignment="Center"/>
+                <TextBox x:Name="DurationField" MinWidth="100"/>
+            </StackPanel>
+        </WrapPanel>
+
+        <WrapPanel Grid.Row="4" VerticalAlignment="Top" Visibility="Collapsed" HorizontalAlignment="Center" Orientation="Horizontal" Margin="0,10,0,0" x:Name="SpellFields">
+            <StackPanel VerticalAlignment="Center" Margin="0,0,40,0">
+                <CheckBox Content="Concentrate?" x:Name="ConcentrateCheck" IsChecked="{Binding ElementName=SpellPopup, Path=NewSpell.Concentrate, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="30,0,10,0">
+                <Label Content="Cast Time:" HorizontalAlignment="Center"/>
+                <TextBox MinWidth="100" Text="{Binding ElementName=SpellPopup, Path=NewSpell.CastTime}"/>
+            </StackPanel>
+        </WrapPanel>
+        
+
+    </Grid>
+</Window>

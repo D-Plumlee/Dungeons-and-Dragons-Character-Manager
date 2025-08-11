@@ -1,0 +1,758 @@
+﻿<UserControl x:Class="GuiApplication.SingleEntryDisplay"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:GuiApplication"
+      xmlns:lib="clr-namespace:DnDEntityLibrary;assembly=DnDEntityLibrary"
+xmlns:libinv="clr-namespace:DnDEntityLibrary.Inventory;assembly=DnDEntityLibrary"
+xmlns:libspl="clr-namespace:DnDEntityLibrary.SpellList;assembly=DnDEntityLibrary"
+             xmlns:forms="clr-namespace:GuiApplication.PopupForms"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      x:Name="EntryDisplay"
+             Background="White"
+      >
+    <UserControl.Resources>
+        <CollectionViewSource x:Key="WeaponsSource" Source="{Binding Source={x:Reference EntryDisplay}, Path=RepresentedEntity.Inventory.Weapons}"/>
+        <CollectionViewSource x:Key="ShieldsSource" Source="{Binding Source={x:Reference EntryDisplay}, Path=RepresentedEntity.Inventory.Shields}"/>
+        <CollectionViewSource x:Key="ArmorsSource" Source="{Binding Source={x:Reference EntryDisplay}, Path=RepresentedEntity.Inventory.Armors}"/>
+        <CollectionViewSource x:Key="ItemsSource" Source="{Binding Source={x:Reference EntryDisplay}, Path=RepresentedEntity.Inventory.Items}"/>
+        
+        <CollectionViewSource x:Key="SpellsSource" Source="{Binding Source={x:Reference EntryDisplay}, Path=RepresentedEntity.SpellList.Spells}"/>
+        <CollectionViewSource x:Key="AbilitiesSource" Source="{Binding Source={x:Reference EntryDisplay}, Path=RepresentedEntity.SpellList.AbilityList}"/>
+
+        <CollectionViewSource x:Key="TraitsSource" Source="{Binding Source={x:Reference EntryDisplay}, Path=RepresentedEntity.TraitsAndFeats}"/>
+
+        <CompositeCollection x:Key="InventoryComposite">
+            <CollectionContainer Collection="{Binding Source={StaticResource WeaponsSource}}"/>
+            <CollectionContainer Collection="{Binding Source={StaticResource ShieldsSource}}"/>
+            <CollectionContainer Collection="{Binding Source={StaticResource ArmorsSource}}"/>
+            <CollectionContainer Collection="{Binding Source={StaticResource ItemsSource}}"/>
+        </CompositeCollection>
+
+        <CompositeCollection x:Key="SpellBookComposite">
+            <CollectionContainer Collection="{Binding Source={StaticResource SpellsSource}}"/>
+            <CollectionContainer Collection="{Binding Source={StaticResource AbilitiesSource}}"/>
+            <CollectionContainer Collection="{Binding Source={StaticResource TraitsSource}}"/>
+        </CompositeCollection>
+
+        <DataTemplate DataType="{x:Type libinv:Weapon}">
+            <local:ToggleableRadioButton IsChecked="{Binding Path=Equipped}" GroupName="Weapons" VerticalContentAlignment="Center" x:Name="EquippedWeaponButton"  >
+                <local:ToggleableRadioButton.ToolTip>
+                    <TextBlock>Equipped? <Run Text="{Binding Path=Equipped}"/><LineBreak/>Magic Weapon? <Run Text="{Binding Path=IsMagic}"/>
+               <LineBreak/>Effect: <Run Text="{Binding Path=Effect}"/></TextBlock>
+                </local:ToggleableRadioButton.ToolTip>
+                <StackPanel Margin="3,3,3,3" Orientation="Vertical">
+                    <WrapPanel Orientation="Horizontal">
+                        <TextBlock Text="Weapon" FontWeight="Bold"/>
+                        <TextBlock Margin="10,0,0,0">Name: <Run Text="{Binding Path=Name}"/></TextBlock>
+                        <TextBlock Margin="4,0,0,0" Text="{Binding Path=HitModifier, StringFormat={}{0:(+#);(-#);#}}"/>
+                    </WrapPanel>
+                    <WrapPanel Orientation="Horizontal" >
+                        <TextBlock Margin="0,5,0,3">Weapon Style: <Run Text="{Binding Path=Style}"/></TextBlock>
+                        <TextBlock Margin="7,5,10,3">Damage: <Run Text="{Binding Path=HitDamage}"/> <Run Text="{Binding Path=DamageType}"/></TextBlock>
+                        <Button Margin="3,5,0,3" Command="{Binding Path=DeleteWeaponCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SingleEntryDisplay}}}" CommandParameter="{Binding Path=.}" x:Name="DeleteWeapon" Content="Delete"/>
+                    </WrapPanel>
+                </StackPanel>
+            </local:ToggleableRadioButton>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type libinv:Shield}">
+            <local:ToggleableRadioButton IsChecked="{Binding Path=Equipped}" VerticalContentAlignment="Center" x:Name="EquippedShieldButton" GroupName="Shields">
+                <local:ToggleableRadioButton.ToolTip>
+                    <TextBlock>Equipped? <Run Text="{Binding Path=Equipped}"/>
+                    <LineBreak/>Effect: <Run Text="{Binding Path=Effect}"/></TextBlock>
+                </local:ToggleableRadioButton.ToolTip>
+                <StackPanel Margin="3,3,3,3">
+                        <TextBlock Text="Shield" FontWeight="Bold"/>
+                        <WrapPanel Orientation="Horizontal" >
+                            <TextBlock Margin="0,5,10,3">Name: <Run Text="{Binding Path=Name}"/></TextBlock>
+                            <TextBlock Margin="0,5,10,3">Armor Class Bonus: <Run Text="{Binding Path=ArmorClassBonus, StringFormat={}{0:+#;-#;#}}"/></TextBlock>
+
+                        <Button Margin="3,5,0,3" x:Name="DeleteShield" Content="Delete" Command="{Binding Path=DeleteShieldCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SingleEntryDisplay}}}" CommandParameter="{Binding Path=.}"/>
+                        </WrapPanel>
+                    </StackPanel>
+                
+            </local:ToggleableRadioButton>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type libinv:Armor}">
+            <local:ToggleableRadioButton IsChecked="{Binding Path=Equipped}" GroupName="Armor" VerticalContentAlignment="Center" x:Name="EquippedArmorButton" >
+                <local:ToggleableRadioButton.ToolTip>
+                    <TextBlock>Equipped? <Run Text="{Binding Path=Equipped}"/>
+                    <LineBreak/>Effect: <Run Text="{Binding Path=Effect}"/></TextBlock>
+                </local:ToggleableRadioButton.ToolTip>
+                <StackPanel Margin="3,3,3,3">
+                    <WrapPanel Orientation="Horizontal">
+                        <TextBlock Text="Armor" FontWeight="Bold"/>
+                        <TextBlock Margin="10,0,0,0">Name: <Run Text="{Binding Path=Name}"/></TextBlock>
+                    </WrapPanel>
+                    <WrapPanel Orientation="Horizontal" >
+                        <TextBlock Margin="0,5,0,3">Base Armor Class: <Run Text="{Binding Path=BaseArmorClass}"/></TextBlock>
+                        <TextBlock Margin="7,5,10,3">Armor Type: <Run Text="{Binding Path=Style}"/></TextBlock>
+                        <Button Margin="3,5,0,3" x:Name="DeleteArmor" Content="Delete" Command="{Binding Path=DeleteArmorCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SingleEntryDisplay}}}" CommandParameter="{Binding Path=.}"/>
+                    </WrapPanel>
+                </StackPanel>
+            </local:ToggleableRadioButton>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type libinv:Item}">
+
+            <StackPanel Margin="22,3,3,3">
+                <WrapPanel Orientation="Horizontal">
+                    <TextBlock Text="Item" Margin="0,5,0,5" FontWeight="Bold"/>
+                    <TextBlock Margin="10,5,10,3">Name: <Run Text="{Binding Path=Name}"/></TextBlock>
+                    <Button HorizontalAlignment="Right" x:Name="DeleteItem" Content="Delete" Margin="20,3,5,3" Command="{Binding Path=DeleteItemCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SingleEntryDisplay}}}" CommandParameter="{Binding Path=.}"/>
+                </WrapPanel>
+                <TextBlock Margin="0,5,0,5" TextWrapping="WrapWithOverflow">Effect:
+                    <Run Text="{Binding Path=Effect}"/>
+                </TextBlock>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type libspl:Spell}">
+            <StackPanel Margin="22,3,3,3">
+                <StackPanel.ToolTip>
+                    <TextBlock TextWrapping="WrapWithOverflow">Cast Time: <Run Text="{Binding Path=CastTime}"/><LineBreak/>Concentrate? <Run Text="{Binding Path=Concentrate}"/><LineBreak/>
+                    Effect: <Run Text="{Binding Path=Effect}"/></TextBlock>
+                </StackPanel.ToolTip>
+                <WrapPanel Orientation="Horizontal">
+                    <TextBlock Text="Spell" FontWeight="Bold"/>
+                    <TextBlock Margin="10,0,0,0">Name: <Run Text="{Binding Path=Name}"/></TextBlock>
+                    <TextBlock Margin="5,0,0,0">lvl <Run Text="{Binding Path=Level}"/></TextBlock>
+                    <Button HorizontalAlignment="Right" x:Name="DeleteSpell" Content="Delete" Margin="15,0,0,0" Command="{Binding Path=DeleteSpellCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SingleEntryDisplay}}}" CommandParameter="{Binding Path=.}"/>
+                </WrapPanel>
+                <WrapPanel Orientation="Horizontal">
+                    <TextBlock Margin="0,5,0,3">Area: <Run Text="{Binding Path=Area}"/></TextBlock>
+                    <TextBlock Margin="7,5,0,3">Duration: <Run Text="{Binding Path=Duration}"/></TextBlock>
+                </WrapPanel>
+            </StackPanel>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type libspl:Ability}">
+            <StackPanel Margin="22,3,3,3">
+                <StackPanel.ToolTip>
+                    <TextBlock TextWrapping="WrapWithOverflow">Effect: <Run Text="{Binding Path=Effect}"/></TextBlock>
+                </StackPanel.ToolTip>
+                <WrapPanel Orientation="Horizontal">
+                    <TextBlock Text="Ability" FontWeight="Bold"/>
+                    <TextBlock Margin="10,0,0,0">Name: <Run Text="{Binding Path=Name}"/></TextBlock>
+                    <TextBlock Margin="5,0,0,0">Uses: <Run Text="{Binding Path=Uses}"/></TextBlock>
+                    <Button HorizontalAlignment="Right" x:Name="DeleteAbility" Content="Delete" Margin="15,0,0,0" Command="{Binding Path=DeleteAbilityCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SingleEntryDisplay}}}" CommandParameter="{Binding Path=.}"/>
+                </WrapPanel>
+                <WrapPanel Orientation="Horizontal">
+                    <TextBlock Margin="0,5,0,3">Area: <Run Text="{Binding Path=Area}"/></TextBlock>
+                    <TextBlock Margin="7,5,0,3">Duration: <Run Text="{Binding Path=Duration}"/></TextBlock>
+                </WrapPanel>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type libspl:Trait}">
+
+            <StackPanel Margin="22,3,3,3">
+                <WrapPanel Orientation="Horizontal">
+                    <TextBlock Text="Feat/Trait" Margin="0,5,0,5" FontWeight="Bold"/>
+                    <TextBlock Margin="10,5,10,3">Name: <Run Text="{Binding Path=Name}"/></TextBlock>
+                    <Button HorizontalAlignment="Right" x:Name="DeleteTrait" Content="Delete" Margin="10,3,5,3" Command="{Binding Path=DeleteTraitCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type local:SingleEntryDisplay}}}" CommandParameter="{Binding Path=.}"/>
+                </WrapPanel>
+                <TextBlock Margin="0,5,0,5" HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" MaxWidth="{Binding Source={x:Reference SpellBookScrollViewer},Path=ViewportWidth}">Effect: <Run Text="{Binding Path=Effect}"/></TextBlock>
+            </StackPanel>
+        </DataTemplate>
+
+    </UserControl.Resources>
+
+    <DockPanel x:Name="Dock">
+        <Label HorizontalContentAlignment="Center" x:Name="PageLabel" Content="{Binding Path=RepresentedEntity.Name, ElementName=EntryDisplay}" DockPanel.Dock="Top" FontSize="20" Margin="0, 10, 0, 5" />
+        <!-- Should be "New Entry" on new-->
+        <Separator DockPanel.Dock="Top" />
+        <Menu DockPanel.Dock="Top" HorizontalAlignment="left" BorderBrush="Black" Height="25" Width="{Binding ElementName=Dock,Path=ActualWidth}">
+            <MenuItem Header="_New" x:Name="NewMenuItem">
+                <MenuItem Header="New _File" Click="NewFileMenuButton_Clicked"/>
+            </MenuItem>
+            
+            <MenuItem Header="_Files" IsEnabled="False">
+                <MenuItem Header="Manage _Active Files" >
+                    <MenuItem Header="File1.xml" IsCheckable="true" StaysOpenOnClick="true"/>
+                    <MenuItem Header="File2.xml" IsCheckable="true" StaysOpenOnClick="true"/>
+                    <MenuItem Header="File3.xml" IsCheckable="true" StaysOpenOnClick="true"/>
+                    <MenuItem Header="File4.xml" IsCheckable="true" StaysOpenOnClick="true"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_Save" IsEnabled="False">
+                <MenuItem Header="_Save To Origin Files"/>
+                <MenuItem Header="Save As _New File"/>
+            </MenuItem>
+        </Menu>
+<forms:NewFilePopup x:Name="NewPopup" IsOpen="False" PlacementTarget="{Binding ElementName=NewMenuItem}" Placement="Bottom"/>
+        <ToolBar Height="60" DockPanel.Dock="Top">
+            <!--<Button Content="Change Origin File" x:Name="ChangeOriginFile" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch"/>-->
+            <Button Content="Edit Campaigns/Groups" x:Name="EditCampaignGroup" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch" Click="EditCampaignGroup_Click"/>
+            <Button Content="View Mode" Click="SaveChanges_Click" x:Name="SaveChanges" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch" IsEnabled="False"/>
+            <Button Content="Edit Mode" Click="EditMode_ButtonClicked" x:Name="EditEntry" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch" Padding="10,0,10,0" IsEnabled="true"/>
+            <Button Content="Delete" x:Name="DeleteEntry" Click="DeleteEntry_Click" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch"/>
+        </ToolBar>
+
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock x:Name="StatusBarLabel" Text="Current Location: "/>
+            </StatusBarItem>
+        </StatusBar>
+        <Grid>
+            
+
+            <ScrollViewer x:Name="scrollViewer" HorizontalAlignment="Left" VerticalScrollBarVisibility="Auto" Margin="0,10,0,10" Width="{Binding ActualWidth, ElementName=PageLabel, Mode=OneWay}" >
+
+                <StackPanel Orientation="Vertical" Height="Auto" Width="{Binding ElementName=scrollViewer, Path=Width}">
+                    <WrapPanel x:Name="DisplayEntryStackPanel" Orientation="Horizontal"  >
+
+                        <TextBlock Margin="10,0,10,0" FontWeight="Bold">Name: <Run Text="{Binding Path=RepresentedEntity.Name, ElementName=EntryDisplay}" FontWeight="Normal"/></TextBlock>
+                        <TextBlock Margin="10,0,10,0" x:Name="ClassificationDisplay"><Run Text="{Binding Path=RepresentedEntity.Classification, ElementName=EntryDisplay}" FontWeight="Bold"/></TextBlock>
+                        <WrapPanel x:Name="ClassificationEdit" Visibility="Collapsed">
+                            <TextBlock Text="Type:" FontWeight="Bold"/>
+                            <WrapPanel Margin="5,0,0,5" Orientation="Vertical">
+                            <RadioButton x:Name="NPCButton" Content="NPC" Checked="ClassificationSet_Handler" />
+                            <RadioButton x:Name="PlayerButton" Content="Player" Checked="ClassificationSet_Handler" />
+                            <RadioButton x:Name="MonsterButton" Content="Monster" Checked="ClassificationSet_Handler" />
+                            </WrapPanel>
+                        </WrapPanel>
+                        <!--Combobox for editing?-->
+                        <TextBlock Margin="10,0,0,0" x:Name="DisplayCampaigns" FontWeight="Bold" >Campaign(s):
+                          <!--<Run Text="" x:Name="DisplayCampaignsInnerText" FontWeight="Normal"/>-->
+                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Campaign}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="3,0,3,0" BorderBrush="Black" BorderThickness="0,0,0,1"><TextBlock Text="{Binding Path=.}"/></Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <TextBlock Margin="10,0,0,0" x:Name="DisplayGroups" FontWeight="Bold">Group(s):
+                        </TextBlock>
+                        <ItemsControl ItemsSource="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Group}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="3,0,3,0" BorderBrush="Black" BorderThickness="0,0,0,1">
+                                        <TextBlock Text="{Binding Path=.}"/>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock Margin="10,0,10,0" x:Name="RaceDisplay" FontWeight="Bold">Race: <Run FontWeight="Normal" Text="{Binding Path=RepresentedEntity.Race, ElementName=EntryDisplay}"/></TextBlock>
+                        <StackPanel x:Name="RaceEdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">Race:</TextBlock>
+                            <TextBox Margin="0,0,5,0" VerticalAlignment="Top" MinWidth="50" Text="{Binding Path=RepresentedEntity.Race, ElementName=EntryDisplay}"/>
+                        </StackPanel>
+                        <TextBlock Margin="10,0,10,0" x:Name="ClassDisplay" FontWeight="Bold">Class: <Run FontWeight="Normal" Text="{Binding Path=RepresentedEntity.ClassName, ElementName=EntryDisplay}"/></TextBlock>
+                        <StackPanel x:Name="ClassEdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">Class:</TextBlock>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Top" MinWidth="50" Text="{Binding Path=RepresentedEntity.ClassName, ElementName=EntryDisplay}"/>
+                        </StackPanel>
+                        <!-- Hide on Classification==Monster -->
+                        <TextBlock Margin="10,0,10,0" x:Name="LevelCRDisplay" FontWeight="Bold">Level/CR: <Run FontWeight="Normal" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Level}"/></TextBlock>
+                        <StackPanel x:Name="LevelCREdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <StackPanel.ToolTip>
+                                <TextBlock TextWrapping="WrapWithOverflow" MaxWidth="200">For NPCs and Player Characters, enter the level as a number (e.g., "14"). <LineBreak/>
+                                For Monsters and Creatures, enter the CR as a number or fraction (e.g., "5", "1/4").</TextBlock>
+                            </StackPanel.ToolTip>
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">Level/CR:</TextBlock>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Top" Width="25" Text="{Binding Path=RepresentedEntity.Level, ElementName=EntryDisplay}"/>
+                        </StackPanel>
+            
+                        <TextBlock x:Name="ArmorClassDisplay" Margin="10,0,10,0" FontWeight="Bold">Armor Class: <Run FontWeight="Normal" Text="{Binding Path=RepresentedEntity.ArmorClass, ElementName=EntryDisplay}"/></TextBlock>
+                        <StackPanel x:Name="ArmorClassEdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">Armor Class:</TextBlock>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Top" MaxLength="2" Width="25" Text="{Binding Path=RepresentedEntity.ArmorClass, ElementName=EntryDisplay}"/>
+                        </StackPanel>
+                        
+                        
+                        <StackPanel x:Name="HPDisplay" Margin="10,0,10,0" Orientation="Horizontal">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">HP:</TextBlock>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Top" MaxLength="3" Width="25" Text="{Binding Path=RepresentedEntity.CurrentHitPoints, ElementName=EntryDisplay}"/>
+                            <TextBlock Margin="0,0,0,12" VerticalAlignment="Center">/ <Run Text="{Binding Path=RepresentedEntity.MaxHitPoints, ElementName=EntryDisplay}"/></TextBlock>
+                        </StackPanel>
+                        <StackPanel x:Name="HPEdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">HP:</TextBlock>
+                            <StackPanel>
+                                <StackPanel.ToolTip>
+                                    <TextBlock>Current Health</TextBlock>
+                                </StackPanel.ToolTip>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Bottom" MaxLength="3" Width="25" Text="{Binding Path=RepresentedEntity.CurrentHitPoints, ElementName=EntryDisplay}"/>
+                                </StackPanel>
+                            <TextBlock Margin="0,0,4,0" VerticalAlignment="Top">/</TextBlock>
+                            <StackPanel>
+                                <StackPanel.ToolTip>
+                                    <TextBlock>Maximum Health</TextBlock>
+                                </StackPanel.ToolTip>
+                                <TextBox Margin="0,0,5,10" VerticalAlignment="Bottom" MaxLength="3" Width="25" Text="{Binding Path=RepresentedEntity.MaxHitPoints, ElementName=EntryDisplay}"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <TextBlock x:Name="HitDiceDisplay" Margin="10,0,10,0" FontWeight="Bold">Hit Dice: <Run FontWeight="Normal" Text="{Binding Path=RepresentedEntity.HitDice, ElementName=EntryDisplay}"/></TextBlock>
+                        <StackPanel x:Name="HitDiceEdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">HitDice:</TextBlock>
+                            <StackPanel>
+                                <StackPanel.ToolTip>
+                                    <TextBlock>Enter in the format: # D#, etc...</TextBlock>
+                                </StackPanel.ToolTip>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Top" MinWidth="50" Text="{Binding Path=RepresentedEntity.HitDice, ElementName=EntryDisplay}"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <TextBlock x:Name="InitiativeBonusDisplay" Margin="10,0,10,0" FontWeight="Bold">Initiative Bonus: <Run FontWeight="Normal" Text="{Binding Path=RepresentedEntity.InitiativeBonus, ElementName=EntryDisplay, StringFormat={}{0:+#;-#;#}}"/></TextBlock>
+                        <StackPanel x:Name="InitiativeBonusEdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">Initiative Bonus:</TextBlock>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Top" MinWidth="25" Text="{Binding Path=RepresentedEntity.InitiativeBonus, ElementName=EntryDisplay}"/>
+                        </StackPanel>
+                        <TextBlock x:Name="MoveSpeedDisplay" Margin="10,0,10,0" FontWeight="Bold">Move Speed: <Run FontWeight="Normal" Text="{Binding Path=RepresentedEntity.MoveSpeed, ElementName=EntryDisplay}"/> <Run FontWeight="Normal" Text="ft"/></TextBlock>
+                        <StackPanel x:Name="MoveSpeedEdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">MoveSpeed:</TextBlock>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Top" MinWidth="25" Text="{Binding Path=RepresentedEntity.MoveSpeed, ElementName=EntryDisplay}"/>
+                            <TextBlock Margin="0,0,0,12" VerticalAlignment="Center" Text=" ft"/>
+                        </StackPanel>
+                        <TextBlock x:Name="ProficiencyBonusDisplay" Margin="10,0,10,0" FontWeight="Bold">Proficiency Bonus: <Run FontWeight="Normal" Text="{Binding Path=RepresentedEntity.ProficiencyBonus, ElementName=EntryDisplay, StringFormat={}{0:+#;-#;#}}"/></TextBlock>
+                        <StackPanel x:Name="ProficiencyBonusEdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">Proficiency Bonus:</TextBlock>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Top" MaxLength="1" MinWidth="15" Text="{Binding Path=RepresentedEntity.ProficiencyBonus, ElementName=EntryDisplay}"/>
+                        </StackPanel>
+                        <TextBlock x:Name="PassivePerceptionDisplay" Margin="10,0,10,0" FontWeight="Bold">Passive Perception: <Run FontWeight="Normal" Text="{Binding Path=RepresentedEntity.PassivePerception, ElementName=EntryDisplay}"/></TextBlock>
+                        <StackPanel x:Name="PassivePerceptionEdit" Margin="10,0,10,0" Orientation="Horizontal" Visibility="Collapsed">
+                            <TextBlock Margin="0,0,5,0" VerticalAlignment="Top" FontWeight="Bold">Passive Perception:</TextBlock>
+                            <TextBox Margin="0,0,5,10" VerticalAlignment="Top"  MinWidth="25" Text="{Binding Path=RepresentedEntity.PassivePerception, ElementName=EntryDisplay}"/>
+                        </StackPanel>
+                        <StackPanel x:Name="DeathSavesPanel" Margin="10,0,10,0" Orientation="Vertical">
+                            <TextBlock Text="Death Saves" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal">
+                                <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.DeathSaves[0]}" x:Name="ds1"/>
+                                <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.DeathSaves[1]}" x:Name="ds2"/>
+                                <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.DeathSaves[2]}" x:Name="ds3"/>
+                                <TextBlock Text=" - "/>
+                                <!-- Add DeathSaves to DnDEntity and bind it to this and EntityComponent-->
+                                <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.DeathSaves[3]}" x:Name="ds4"/>
+                                <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.DeathSaves[4]}" x:Name="ds5"/>
+                                <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.DeathSaves[5]}" x:Name="ds6"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <WrapPanel Margin="10,0,10,0" Orientation="Horizontal" x:Name="AbilityScoresDisplayWrapPanel">
+                            <TextBlock Text="Ability Scores: " FontWeight="Bold" VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                <TextBlock Text="Str: " VerticalAlignment="Center"/>
+                                <StackPanel x:Name="StrScoreDisplay" Orientation="Vertical">
+                                    <TextBlock HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Strength, ElementName=EntryDisplay}"/>
+                                    <Separator/>
+                                    <TextBlock Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Strength, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                                <StackPanel x:Name="StrScoreEdit" Orientation="Vertical" Visibility="Collapsed">
+                                    <TextBox MaxLength="2" Width="25" HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Strength, ElementName=EntryDisplay, UpdateSourceTrigger=PropertyChanged}" TextChanged="RecalculateMods"/>
+                                    <Separator/>
+                                    <TextBlock Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Strength, ElementName=EntryDisplay, StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel  Orientation="Horizontal" Margin="5,0,5,0">
+                                <TextBlock Text="Dex: " VerticalAlignment="Center"/>
+                                <StackPanel x:Name="DexScoreDisplay" Orientation="Vertical">
+                                    <TextBlock HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Dexterity, ElementName=EntryDisplay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <Separator/>
+                                    <TextBlock x:Name="DisplayDexMod" Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Dexterity, ElementName=EntryDisplay, UpdateSourceTrigger=PropertyChanged,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                                <StackPanel x:Name="DexScoreEdit" Orientation="Vertical" Visibility="Collapsed">
+                                    <TextBox MaxLength="2" Width="25" HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Dexterity, ElementName=EntryDisplay, UpdateSourceTrigger=PropertyChanged}" TextChanged="RecalculateMods"/>
+                                <Separator/>
+                                    <TextBlock Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Dexterity, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                            </StackPanel>
+                            </StackPanel>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                <TextBlock Text="Con: " VerticalAlignment="Center"/>
+                                <StackPanel x:Name="ConScoreDisplay" Orientation="Vertical">
+                                    <TextBlock HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Constitution, ElementName=EntryDisplay}"/>
+                                    <Separator/>
+                                    <TextBlock x:Name="DisplayConMod" Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Constitution, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                                <StackPanel x:Name="ConScoreEdit" Orientation="Vertical" Visibility="Collapsed">
+                                    <TextBox MaxLength="2" Width="25" HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Constitution, ElementName=EntryDisplay, UpdateSourceTrigger=PropertyChanged}" TextChanged="RecalculateMods"/>
+                                <Separator/>
+                                    <TextBlock Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Constitution, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                            </StackPanel>
+                            </StackPanel>
+                            
+                            <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                <TextBlock Text="Int: " VerticalAlignment="Center"/>
+                                <StackPanel x:Name="IntScoreDisplay" Orientation="Vertical">
+                                    <TextBlock HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Intelligence, ElementName=EntryDisplay}"/>
+                                    <Separator/>
+                                    <TextBlock x:Name="DisplayIntMod" Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Intelligence, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                                <StackPanel x:Name="IntScoreEdit" Orientation="Vertical" Visibility="Collapsed">
+                                    <TextBox MaxLength="2" Width="25" HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Intelligence, ElementName=EntryDisplay, UpdateSourceTrigger=PropertyChanged}" TextChanged="RecalculateMods"/>
+                                    <Separator/>
+                                    <TextBlock Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Intelligence, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                <TextBlock Text="Wis: " VerticalAlignment="Center"/>
+                                <StackPanel x:Name="WisScoreDisplay" Orientation="Vertical">
+                                    <TextBlock HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Wisdom, ElementName=EntryDisplay}"/>
+                                    <Separator/>
+                                    <TextBlock x:Name="DisplayWisMod" Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Wisdom, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                                <StackPanel x:Name="WisScoreEdit" Orientation="Vertical" Visibility="Collapsed">
+                                    <TextBox MaxLength="2" Width="25" HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Wisdom, ElementName=EntryDisplay, UpdateSourceTrigger=PropertyChanged}" TextChanged="RecalculateMods"/>
+                                    <Separator/>
+                                    <TextBlock Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Wisdom, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
+                                <TextBlock Text="Cha: " VerticalAlignment="Center"/>
+                                <StackPanel x:Name="ChaScoreDisplay" Orientation="Vertical">
+                                    <TextBlock HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Charisma, ElementName=EntryDisplay}"/>
+                                    <Separator/>
+                                    <TextBlock x:Name="DisplayChaMod" Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Charisma, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                                <StackPanel x:Name="ChaScoreEdit" Orientation="Vertical" Visibility="Collapsed">
+                                    <TextBox MaxLength="2" Width="25" HorizontalAlignment="Center" Text="{Binding Path=RepresentedEntity.AbilityScores.Charisma, ElementName=EntryDisplay, UpdateSourceTrigger=PropertyChanged}" TextChanged="RecalculateMods"/>
+                                    <Separator/>
+                                    <TextBlock Text="{Binding Path=RepresentedEntity.AbilityScoreModifiers.Charisma, ElementName=EntryDisplay,  StringFormat={}{0:(+#);(-#);( 0)}}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                        </WrapPanel>
+
+
+                        <WrapPanel Margin="10,0,10,0" Orientation="Horizontal" x:Name="SavingThrowsDisplayWrapPanel">
+                            <TextBlock VerticalAlignment="Center" Text="Saving Throws: " FontWeight="Bold" />
+
+                            <StackPanel Visibility="Hidden" Orientation="Vertical">
+                                <TextBlock HorizontalAlignment="Center" Text="1"/>
+                                <Separator/>
+                                <!-- Adding an invisible element to make the stackpanel height match the ability scores stack panel. Data binding to the height did not work 
+                                for some reason.-->
+                                <TextBlock  Text="1"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" x:Name="SavingThrowDisplay">
+                            <TextBlock VerticalAlignment="Center" Margin="2,0,5,0">Str: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Strength, ElementName=EntryDisplay, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                            <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Dex: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Dexterity, ElementName=EntryDisplay, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                            <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Con: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Constitution, ElementName=EntryDisplay, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                            <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Int: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Intelligence, ElementName=EntryDisplay, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                            <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Wis: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Wisdom, ElementName=EntryDisplay, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                            <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Cha: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Charisma, ElementName=EntryDisplay, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" x:Name="SavingThrowEdit" Visibility="Collapsed">
+                                <TextBlock VerticalAlignment="Center" Margin="2,0,5,0">Str: <TextBox Text="{Binding Path=RepresentedEntity.SavingThrows.Strength, ElementName=EntryDisplay}"/></TextBlock>
+                                <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Dex: <TextBox Text="{Binding Path=RepresentedEntity.SavingThrows.Dexterity, ElementName=EntryDisplay}"/></TextBlock>
+                                <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Con: <TextBox Text="{Binding Path=RepresentedEntity.SavingThrows.Constitution, ElementName=EntryDisplay}"/></TextBlock>
+                                <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Int: <TextBox Text="{Binding Path=RepresentedEntity.SavingThrows.Intelligence, ElementName=EntryDisplay}"/></TextBlock>
+                                <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Wis: <TextBox Text="{Binding Path=RepresentedEntity.SavingThrows.Wisdom, ElementName=EntryDisplay}"/></TextBlock>
+                                <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">Cha: <TextBox Text="{Binding Path=RepresentedEntity.SavingThrows.Charisma, ElementName=EntryDisplay}"/></TextBlock>
+                            </StackPanel>
+                        </WrapPanel>
+                        <StackPanel x:Name="SkillsDisplay" Margin="10,0,10,0" Orientation="Vertical">
+                            <TextBlock Text="Skills:" FontWeight="Bold" HorizontalAlignment="Center"/>
+                            <ComboBox MinWidth="100" x:Name="SkillsDisplayComboBox">
+                                <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Athletics: </TextBlock>
+                                        <TextBlock x:Name="AthleticsDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Athletics}"/>
+                                    </StackPanel>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Acrobatics: </TextBlock>
+                                        <TextBlock x:Name="AcrobaticsDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Acrobatics}"/>
+
+                                    </StackPanel>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Sleight of Hand: </TextBlock>
+                                        <TextBlock x:Name="SleightOfHandDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.SleightOfHand}"/>
+                           
+                                    </StackPanel>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Stealth: </TextBlock>
+                                        <TextBlock x:Name="StealthDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Stealth}"/>
+                            
+                                    </StackPanel>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Arcana: </TextBlock>
+                                        <TextBlock x:Name="ArcanaDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Arcana}"/>
+                               
+                                    </StackPanel>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">History: </TextBlock>
+                                        <TextBlock x:Name="HistoryDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.History}"/>
+                           
+                                    </StackPanel>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Investigation: </TextBlock>
+                                        <TextBlock x:Name="InvestigationDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Investigation}"/>
+                              
+                                    </StackPanel>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Nature: </TextBlock>
+                                        <TextBlock x:Name="NatureDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Nature}"/>
+                                   
+                                    </StackPanel>
+                                </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Margin="0,0,5,0">Religion: </TextBlock>
+                                            <TextBlock x:Name="ReligionDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Religion}"/>
+                      
+                                    </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Margin="0,0,5,0">Animal Handling: </TextBlock>
+                                            <TextBlock x:Name="AnimalHandlingDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.AnimalHandling}"/>
+             
+                                    </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Margin="0,0,5,0">Insight: </TextBlock>
+                                            <TextBlock x:Name="InsightDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Insight}"/>
+           
+                                    </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Margin="0,0,5,0">Medicine: </TextBlock>
+                                            <TextBlock x:Name="MedicineDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Medicine}"/>
+                              
+                                    </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}" >
+                                            <TextBlock Margin="0,0,5,0">Perception: </TextBlock>
+                                            <TextBlock x:Name="PerceptionDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Perception}"/>
+                                 
+                                    </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}" >
+                                            <TextBlock Margin="0,0,5,0">Survival: </TextBlock>
+                                            <TextBlock x:Name="SurvivalDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Survival}"/>
+                                        
+                                    </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem >
+                                        <StackPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}" >
+                                            <TextBlock Margin="0,0,5,0">Deception: </TextBlock>
+                                            <TextBlock x:Name="DeceptionDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Deception}"/>
+                                        
+                                    </StackPanel>
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                    <StackPanel Orientation="Horizontal" Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ActualWidth}" >
+                                            <TextBlock Margin="0,0,5,0">Intimidation: </TextBlock>
+                                            <TextBlock x:Name="IntimidationDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Intimidation}"/>
+                                 
+                                    </StackPanel>
+                                    </ComboBoxItem>
+                                        <ComboBoxItem >
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Margin="0,0,5,0">Performance: </TextBlock>
+                                                <TextBlock x:Name="PerformanceDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Performance}"/>
+                                   
+                                    </StackPanel>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Margin="0,0,5,0">Persuasion: </TextBlock>
+                                                <TextBlock x:Name="PersuasionDisplay" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Persuasion}"/>
+                                  
+                                    </StackPanel>
+                                        </ComboBoxItem>
+                            </ComboBox>
+                            
+
+                        </StackPanel>
+                        <StackPanel x:Name="SkillsEdit" Orientation="Horizontal" Visibility="Collapsed" Margin="0,3,0,0">
+                            <TextBlock FontWeight="Bold" VerticalAlignment="Center" Text="Skills: "/>
+                            <ListView MaxHeight="70">
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Athletics: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Athletics}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Acrobatics: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Acrobatics}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Sleight of Hand: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.SleightOfHand}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Stealth: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Stealth}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Arcana: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Arcana}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">History: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.History}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Investigation: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Investigation}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Nature: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Nature}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Religion: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Religion}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Animal Handling: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.AnimalHandling}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Insight: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Insight}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Medicine: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Medicine}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Perception: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Perception}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Survival: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Survival}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Deception: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Deception}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Intimidation: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Intimidation}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Performance: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Performance}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                                <ListViewItem>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="0,0,5,0">Persuasion: </TextBlock>
+                                        <TextBox MaxLength="2" Width="25" Text="{Binding ElementName=EntryDisplay, Path=RepresentedEntity.Skills.Persuasion}" />
+                                    </StackPanel>
+                                </ListViewItem>
+                            </ListView>
+                        </StackPanel>
+
+                    </WrapPanel>
+
+
+                    <WrapPanel x:Name="EditEntryStackPanel" Orientation="Horizontal"  Height="Auto"   Visibility="Collapsed">
+                        <!-- Add Editing entry boxes here. Programmatically determine editing or new, Name should only be editable on new -->
+                        <!-- Add bubbling event for new entry to rename Tab Header -->
+                    </WrapPanel>
+                    <Grid Margin="0,10,0,0" Width="{Binding ElementName=scrollViewer, Path=Width}" Height="200">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <DockPanel Margin="15,0,10,0" Background="#FFFFF2F2" Grid.Column="0" Width="Auto" LastChildFill="True" >
+
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                            <Label Content="Inventory:" FontWeight="Bold" Height="26" DockPanel.Dock="Top"/>
+                                <Button Margin="200,3,0,3" Content="Add Item" Click="AddItem_ButtonClick"/>
+                            </StackPanel>
+                            <Separator DockPanel.Dock="top"/>
+                            <ScrollViewer x:Name="InventoryScrollView"  VerticalScrollBarVisibility="Auto" >
+
+                                <ItemsControl ItemsSource="{StaticResource InventoryComposite}" Background="Transparent" BorderBrush="Transparent" Margin="5" x:Name="InventoryComponentsBox">
+
+                                </ItemsControl> 
+
+                            </ScrollViewer>
+                        </DockPanel>
+                        <DockPanel  Margin="10,0,15,0" Width="Auto" Background="#FFEDF9FF" Grid.Column="1" LastChildFill="True" >
+                            
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                                <Label Content="Spell List And Feats:" FontWeight="Bold" Height="26" />
+                                <Button Margin="125,3,0,3" Content="Add Spell" Click="AddSpell_ButtonClick"/>
+                            </StackPanel>
+                            <Separator DockPanel.Dock="top"/>
+                            <ScrollViewer x:Name="SpellBookScrollViewer" VerticalScrollBarVisibility="Auto" >
+
+                              
+
+                                    <ItemsControl ItemsSource="{StaticResource SpellBookComposite}" Background="Transparent" BorderBrush="Transparent" Margin="5" x:Name="SpellsComponentsBox">
+
+                                    </ItemsControl>
+
+                                
+
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Grid>
+                </StackPanel>
+
+            </ScrollViewer>
+        </Grid>
+
+    </DockPanel>
+</UserControl>

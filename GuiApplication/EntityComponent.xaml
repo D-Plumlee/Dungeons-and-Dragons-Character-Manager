@@ -1,0 +1,152 @@
+﻿<UserControl x:Class="GuiApplication.EntityComponent"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:GuiApplication"
+             xmlns:lib="clr-namespace:DnDEntityLibrary;assembly=DnDEntityLibrary"
+             xmlns:libinv="clr-namespace:DnDEntityLibrary.Inventory;assembly=DnDEntityLibrary"
+             xmlns:libspl="clr-namespace:DnDEntityLibrary.SpellList;assembly=DnDEntityLibrary"
+      mc:Ignorable="d" 
+             Name="EntityComponentWrap"
+       d:DesignWidth="800"
+             SourceUpdated="EntityComponentWrap_SourceUpdated"
+             Visibility="{Binding ElementName=EntityComponentWrap, Path=Display}"
+      >
+    <UserControl.Resources>
+
+        <CollectionViewSource x:Key="SpellsSource" Source="{Binding Source={x:Reference EntityComponentWrap}, Path=RepresentedEntity.SpellList.Spells}"/>
+        <CollectionViewSource x:Key="AbilitiesSource" Source="{Binding Source={x:Reference EntityComponentWrap}, Path=RepresentedEntity.SpellList.AbilityList}"/>
+        
+        <CompositeCollection x:Key="SpellBookComposite">
+            <CollectionContainer Collection="{Binding Source={StaticResource SpellsSource}}"/>
+            <CollectionContainer Collection="{Binding Source={StaticResource AbilitiesSource}}"/>
+        </CompositeCollection>
+
+        <DataTemplate DataType="{x:Type libspl:Spell}">
+            <StackPanel Width="{Binding Source={x:Reference SpellsBox},Path=ActualWidth}">
+                <StackPanel.ToolTip>
+                    <StackPanel>
+                        <WrapPanel Orientation="Horizontal">
+                            <TextBlock>lvl: <Run Text="{Binding Path=Level}"/></TextBlock>
+                            <TextBlock Margin="10,0,0,0">Cast Time: <Run Text="{Binding Path=CastTime}"/></TextBlock>
+                        </WrapPanel>
+                        <WrapPanel Orientation="Horizontal">
+                            <TextBlock>Area: <Run Text="{Binding Path=Area}"/></TextBlock>
+                            <TextBlock Margin="8,0,0,0">Duration: <Run Text="{Binding Path=Duration}"/></TextBlock>
+                        </WrapPanel>
+                    <TextBlock TextWrapping="WrapWithOverflow" MaxWidth="200" HorizontalAlignment="Left">Effect: <Run Text="{Binding Path=Effect}"/></TextBlock>
+                    </StackPanel>
+                </StackPanel.ToolTip>
+                <TextBlock Text="{Binding Path=Name}"/>
+            </StackPanel>
+        </DataTemplate>
+        
+        <DataTemplate DataType="{x:Type libspl:Ability}">
+            <StackPanel Width="{Binding Source={x:Reference SpellsBox},Path=ActualWidth}">
+                <StackPanel.ToolTip> 
+                    <StackPanel>
+                        <WrapPanel Orientation="Horizontal">
+                            <TextBlock>Area: <Run Text="{Binding Path=Area}"/></TextBlock>
+                            <TextBlock Margin="8,0,0,0">Duration: <Run Text="{Binding Path=Duration}"/></TextBlock>
+                        </WrapPanel>
+                        <TextBlock TextWrapping="WrapWithOverflow" MaxWidth="200" HorizontalAlignment="Left">Effect: <Run Text="{Binding Path=Effect}"/></TextBlock>
+                    </StackPanel>
+                </StackPanel.ToolTip>
+                <TextBlock Text="{Binding Path=Name}"/>
+            </StackPanel>
+        </DataTemplate>
+        
+        
+        
+    </UserControl.Resources>
+    <CheckBox VerticalContentAlignment="Center" Margin="10,5,10,5" Checked="CheckBox_Checked" Unchecked="CheckBox_Unchecked" x:Name="CheckboxWrap">
+        <StackPanel>
+        <WrapPanel Height="Auto" MinHeight="50" Width="Auto" Background="#FFFFF2F2" Name="EntityComponentWrapPanel">
+            <!--<ComboBox Name="EquippedWeaponCombobox"  ItemsSource="{Binding Source=RepresentedEntity.Inventory.Weapons, Path=RepresentedEntity.Inventory.Weapons}" />   does not work?-->
+                <TextBlock Margin="5,10,5,0">Name: <Hyperlink Click="Hyperlink_Click"><Run Text="{Binding Path=RepresentedEntity.Name, ElementName=EntityComponentWrap}"/></Hyperlink></TextBlock>
+            <TextBlock Margin="5,10,5,0">Level: <Run Text="{Binding Path=RepresentedEntity.Level, ElementName=EntityComponentWrap}"/></TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Margin="5,10,5,3" VerticalAlignment="Center" >HP:</TextBlock>
+                <TextBox Margin="0,0,0,5" VerticalAlignment="Bottom" MaxLength="3" Width="25" Height="{Binding ElementName=Health, Path=ActualHeight}" Text="{Binding Path=RepresentedEntity.CurrentHitPoints, ElementName=EntityComponentWrap}"/>
+                <TextBlock Margin="3,10,5,3" VerticalAlignment="Center">/ <Run Text="{Binding Path=RepresentedEntity.MaxHitPoints, ElementName=EntityComponentWrap}"/></TextBlock>
+            </StackPanel>
+            <TextBlock Margin="5,10,5,0" >ArmorClass: <Run Text="{Binding Path=RepresentedEntity.ArmorClass, ElementName=EntityComponentWrap}"/></TextBlock>
+                <TextBlock Margin="5,10,5,0">Initiative Bonus: <Run Text="{Binding Path=RepresentedEntity.InitiativeBonus, ElementName=EntityComponentWrap, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+            <TextBlock Margin="5,10,5,0">Hit Modifier: +<Run Text="{Binding Path=SelectedItem.HitModifier, ElementName=WeaponBox}"/></TextBlock>
+            <TextBlock Margin="5,10,5,0">Hit Damage: <Run Text="{Binding Path=SelectedItem.HitDamage, ElementName=WeaponBox}"/></TextBlock>
+            <Button HorizontalAlignment="Right" Margin="5,10,5,0" Content="Show More" Click="Button_Click"/>
+            
+        </WrapPanel>
+        <StackPanel Width="Auto" Background="#FFFFF2F2" Name="ExpandedEntityComponentStackPanel" Visibility="Collapsed">
+            <WrapPanel Height="35" >
+                    <TextBlock Margin="5,10,5,0">Name:  <Hyperlink Click="Hyperlink_Click"><Run Text="{Binding Path=RepresentedEntity.Name, ElementName=EntityComponentWrap}"/></Hyperlink></TextBlock>
+                    <TextBlock Margin="5,10,5,0">Level: <Run Text="{Binding Path=RepresentedEntity.Level, ElementName=EntityComponentWrap}"/></TextBlock>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="5,10,5,3" VerticalAlignment="Center">HP:</TextBlock>
+                        <TextBox Margin="0,0,0,5" VerticalAlignment="Bottom" MaxLength="3" Width="25" Height="{Binding ElementName=Health, Path=ActualHeight}" Text="{Binding Path=RepresentedEntity.CurrentHitPoints, ElementName=EntityComponentWrap}"/>
+                        <TextBlock Margin="3,10,5,3" VerticalAlignment="Center">/ <Run Text="{Binding Path=RepresentedEntity.MaxHitPoints, ElementName=EntityComponentWrap}"/></TextBlock>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Margin="5,10,5,3" VerticalAlignment="Center" >Armor Class:</TextBlock>
+                        <TextBox Margin="0,0,0,5" VerticalAlignment="Bottom" MaxLength="2" Width="25" Height="{Binding ElementName=Health, Path=ActualHeight}" Text="{Binding Path=RepresentedEntity.ArmorClass, ElementName=EntityComponentWrap}"/>
+                    </StackPanel>
+                    <TextBlock Margin="5,10,5,0">Initiative Bonus: <Run Text="{Binding Path=RepresentedEntity.InitiativeBonus, ElementName=EntityComponentWrap, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                    <TextBlock Margin="5,10,5,0">Hit Modifier: +<Run Text="{Binding Path=SelectedItem.HitModifier, ElementName=WeaponBox}"/></TextBlock>
+                    <TextBlock Margin="5,10,5,0">Hit Damage: <Run Text="{Binding Path=SelectedItem.HitDamage, ElementName=WeaponBox}"/></TextBlock>
+                    <Button HorizontalAlignment="Right" Margin="5,10,5,0" Content="Show Less " Click="Button_Click"/>
+
+            </WrapPanel>
+            <WrapPanel Height="35" >
+                <TextBlock Margin="5,10,5,0" Text="Saving Throws:"/>
+
+                    <TextBlock Margin="0,10,5,0">Str: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Strength, ElementName=EntityComponentWrap, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                    <TextBlock Margin="5,10,5,0">Dex: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Dexterity, ElementName=EntityComponentWrap, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                    <TextBlock Margin="5,10,5,0">Con: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Constitution, ElementName=EntityComponentWrap, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                    <TextBlock Margin="5,10,5,0">Int: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Intelligence, ElementName=EntityComponentWrap, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                    <TextBlock Margin="5,10,5,0">Wis: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Wisdom, ElementName=EntityComponentWrap, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+                    <TextBlock Margin="5,10,5,0">Cha: <Run Text="{Binding Path=RepresentedEntity.SavingThrows.Charisma, ElementName=EntityComponentWrap, StringFormat={}{0:+#;-#;0}}"/></TextBlock>
+
+                    <ComboBox Width="125" Margin="5,10,5,0" DataContext="{Binding ElementName=EntityComponentWrap, Path=RepresentedEntity.Inventory.Weapons, Mode=TwoWay}"  x:Name="WeaponBox" ItemsSource="{Binding NotifyOnTargetUpdated=True}"  >
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+
+                                <StackPanel>
+                                    <StackPanel.ToolTip>
+                                        <TextBlock>Damage Type: <Run Text="{Binding Path=DamageType}"/></TextBlock>
+                                    </StackPanel.ToolTip>
+                                <TextBlock Text="{Binding Path=Name}" ></TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        
+                    </ComboBox>
+                    <TextBlock Margin="5,10,5,0" x:Name="WeaponStyleBox" Text="{Binding ElementName=WeaponBox, Path=SelectedItem.Style}"/>
+
+                </WrapPanel>
+            <WrapPanel Height="45" >
+                    <ComboBox Width="125" Margin="5,5,5,0" x:Name="SpellsBox" ItemsSource="{StaticResource SpellBookComposite}" ToolTip="{Binding Path=SelectedItem.ToolTip, RelativeSource={RelativeSource Self}}">
+
+                    </ComboBox>
+
+                <StackPanel Margin="15,0,5,0" Orientation="Vertical">
+                    <TextBlock Text="Death Saves" HorizontalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal">
+                            <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntityComponentWrap, Path=RepresentedEntity.DeathSaves[0]}" x:Name="ds1"/>
+                            <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntityComponentWrap, Path=RepresentedEntity.DeathSaves[1]}" x:Name="ds2"/>
+                            <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntityComponentWrap, Path=RepresentedEntity.DeathSaves[2]}" x:Name="ds3"/>
+                        <TextBlock Text=" - "/>
+                            <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntityComponentWrap, Path=RepresentedEntity.DeathSaves[3]}" x:Name="ds4"/>
+                            <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntityComponentWrap, Path=RepresentedEntity.DeathSaves[4]}" x:Name="ds5"/>
+                            <local:ToggleableRadioButton IsChecked="{Binding ElementName=EntityComponentWrap, Path=RepresentedEntity.DeathSaves[5]}" x:Name="ds6"/>
+                    </StackPanel>
+                </StackPanel>
+
+
+                <TextBlock Margin="20,10,5,0" Text="Speed: 30 ft"/>
+            </WrapPanel>
+        </StackPanel>
+        </StackPanel>
+    </CheckBox>
+    
+</UserControl>
