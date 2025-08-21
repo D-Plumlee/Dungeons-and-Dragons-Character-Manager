@@ -40,7 +40,7 @@
             <StackPanel Margin="30,5,10,0" Orientation="Vertical">
                 <Label Content="Add New Campaign:"/>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox Text="{}" x:Name="CampaignTextBox" MinWidth="120"/>
+                    <TextBox Text="{}" x:Name="CampaignTextBox" Width="120"/>
                     <Button Margin="3" x:Name="AddCampaignButton" Content="Add" Click="AddCampaignButton_Click"/>
                 </StackPanel>
             </StackPanel>
@@ -62,7 +62,7 @@
             <StackPanel Margin="30,5,10,0" Orientation="Vertical">
                 <Label Content="Add New Group:"/>
                 <StackPanel Orientation="Horizontal">
-                    <TextBox MinWidth="120" x:Name="GroupTextBox"/>
+                    <TextBox Width="120" x:Name="GroupTextBox"/>
                     <Button Margin="3" Content="Add" Click="AddGroup_Click"/>
                 </StackPanel>
             </StackPanel>

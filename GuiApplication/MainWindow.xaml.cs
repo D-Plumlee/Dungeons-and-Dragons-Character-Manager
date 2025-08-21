@@ -26,16 +26,13 @@ namespace GuiApplication
     /// </summary>
     public partial class MainWindow : Window
     {
-        //private List<DND::DnDEntityCollection> _allLoadedEntries; // have tab.xaml.cs files LINQ query this colleciton? DnDEntityCollection doesn't implement IEnumerable<T>, so use the property
+       
         protected ObservableCollection<DND::DnDEntityCollection> _allEntriesByFile;
-        protected Dictionary<string, ObservableCollection<string>> _campaignsByFile;
-        protected Dictionary<string, ObservableCollection<string>> _groupsByFile;
-        //private List<DND::DnDEntityCollection> _tabGroupings; // Move to tab.xaml.cs?
-        //private List<DND::DnDEntity> _editingItems; // Move to tab.xaml.cs?
+
+
         private ObservableCollection<TabItem> _tabs;
         private TabItem _lastTab;
-        //private DirectoryInfo _currentDirectory;
-        //protected ObservableCollection<string> _xmlFiles;
+
         public ObservableCollection<string> XmlFiles
         {   get => (ObservableCollection<string>)GetValue(XmlFilesProperty);
             set => SetValue(XmlFilesProperty, value);
@@ -50,9 +47,7 @@ namespace GuiApplication
         protected ObservableCollection<string> _selectedFiles { get; set; }
         private string _directoryPath;
 
-        // Centralized SingleEntryDisplay collection: Slow initial startup, helps with performance during use
-        protected ObservableCollection<EntityComponent> _entryComponents;
-
+        
         public MainWindow()
         {
             try
@@ -82,8 +77,7 @@ namespace GuiApplication
                 
                 _allEntriesByFile = new ObservableCollection<DND::DnDEntityCollection>();
 
-                _campaignsByFile = new Dictionary<string, ObservableCollection<string>>();
-                _groupsByFile = new Dictionary<string, ObservableCollection<string>>();
+
                 
                 List<string> ignoreFiles = new List<string>();
                 foreach (string file in XmlFiles)
@@ -117,9 +111,6 @@ namespace GuiApplication
 
                     col.Campaigns = camps;
                     col.Groups = groups;
-
-                    _campaignsByFile.Add(file, camps);
-                    _groupsByFile.Add(file, groups);
                     
 
                     _allEntriesByFile.Add(col);
@@ -129,12 +120,6 @@ namespace GuiApplication
                     XmlFiles.Remove(f);
                 }    
 
-                _entryComponents = new ObservableCollection<EntityComponent>();
-
-
-                //LoadCheckboxes();
-
-                
                 
 
                 foreach (var s in _allEntriesByFile)
@@ -179,20 +164,6 @@ namespace GuiApplication
             
         } // End MainWindow()
 
-        //public void LoadCheckboxes()
-        //{
-        //    FilesSelectionList.Items.Clear();
-        //    foreach (string fil in XmlFiles)
-        //        {
-        //            var checbox = new CheckBox();
-        //            checbox.Name = fil.Substring(fil.LastIndexOf(System.IO.Path.DirectorySeparatorChar) + 1).Split(".")[0];
-        //            checbox.Content = fil.Substring(fil.LastIndexOf(System.IO.Path.DirectorySeparatorChar)+1);
-        //            checbox.Margin = new Thickness(0, 0, 0, 5);
-        //            checbox.Checked += CheckBox_Checked;
-        //            checbox.Unchecked += CheckBox_Unchecked;
-        //            FilesSelectionList.Items.Add(checbox);
-        //        }
-        //}
 
 
         private void ScrubEquipped(DnDEntity ent)
@@ -239,14 +210,6 @@ namespace GuiApplication
 
         private void tabManager_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //TabItem tab = TabManager.SelectedItem as TabItem;
-            //if (tab != null && tab.Header != null)
-            //{
-
-
-            //}
-            _lastTab = TabManager.SelectedItem as TabItem;
-            // Not sure if I need to add anything here
         } // End tabManager_SelectionChanged()
 
         protected void AddTabItem(TabItem page)
@@ -346,50 +309,26 @@ namespace GuiApplication
 
         private void UpdateViewSelectionList()
         {
-            // Hopefully calls when the _selectedFiles updates.
-            // Reloads buttons in the ViewSelectionList StackPanel
 
-            List<string> selectedCamps = new List<string>();
-            foreach (var cam in (from file in _selectedFiles.ToList() where _campaignsByFile.ContainsKey(file) select _campaignsByFile[file]))
+            var campButtonSource = new CompositeCollection();
+            foreach (var fil in _selectedFiles)
             {
-                selectedCamps.AddRange((from c in cam where !selectedCamps.Contains(c) select c).Distinct());
+                var col = (from c in _allEntriesByFile where c.FileContainedIn.Equals(fil) select c).FirstOrDefault();
+                CollectionContainer collCont = new CollectionContainer() { Collection = col.Campaigns };
+                campButtonSource.Add(collCont);
             }
 
-            List<string> selectedGrps = new List<string>();
-            foreach (var grp in (from file in _selectedFiles where _groupsByFile.ContainsKey(file) select _groupsByFile[file]))
+            var groupButtonSource = new CompositeCollection();
+            foreach (var fil in _selectedFiles)
             {
-                selectedGrps.AddRange((from g in grp where !selectedGrps.Contains(g) select g).Distinct());
+                var col = (from c in _allEntriesByFile where c.FileContainedIn.Equals(fil) select c).FirstOrDefault();
+                CollectionContainer collCont = new CollectionContainer() { Collection = col.Groups };
+                groupButtonSource.Add(collCont);
             }
 
-            int removeChildrenCount = ViewSelectionList.Children.Count - 1;
-            ViewSelectionList.Children.RemoveRange(1, removeChildrenCount);
+            CampaignButtons.ItemsSource = campButtonSource;
+            GroupButtons.ItemsSource = groupButtonSource;
 
-            foreach (string campbtn in selectedCamps)
-            {
-                var addcampbtn = new Button()
-                {
-                    Content = campbtn,
-                    Margin = new Thickness(0, 0, 0, 5),
-                    MaxWidth = 300,
-                    HorizontalContentAlignment = HorizontalAlignment.Left,
-                    Padding = new Thickness(50, 0, 0, 0)
-                };
-                addcampbtn.Click += ViewSelectionList_ButtonClick;
-                ViewSelectionList.Children.Add(addcampbtn);
-            }
-            foreach (string grpbtn in selectedGrps)
-            {
-                var addgrpbtn = new Button()
-                {
-                    Content = grpbtn,
-                    Margin = new Thickness(0, 0, 0, 5),
-                    MaxWidth = 300,
-                    HorizontalContentAlignment = HorizontalAlignment.Right,
-                    Padding = new Thickness(0, 0, 70, 0)
-                };
-                addgrpbtn.Click += ViewSelectionList_ButtonClick;
-                ViewSelectionList.Children.Add(addgrpbtn);
-            }
         } // End UpdateViewSelectionList()
 
 
@@ -574,9 +513,6 @@ namespace GuiApplication
             NewPopup.NewFileName = string.Empty;
         }
 
-        //private void FilesSelectionList_SourceUpdated(object sender, DataTransferEventArgs e)
-        //{
-        //    LoadCheckboxes();
-        //}
+
     }
 }

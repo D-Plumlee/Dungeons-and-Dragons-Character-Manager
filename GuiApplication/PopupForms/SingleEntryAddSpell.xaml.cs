@@ -73,12 +73,14 @@ namespace GuiApplication.PopupForms
             NewSpell.Area = AOEField.Text;
             NewSpell.Duration = DurationField.Text;
             NewSpell.Concentrate = (bool)ConcentrateCheck.IsChecked;
+            NewSpell.Level = (LvlBox.Text == "") ? 0: Int32.Parse(LvlBox.Text);
            
 
             NewAbility.Name = NameField.Text;
             NewAbility.Effect = EffectField.Text;
             NewAbility.Area = AOEField.Text;
             NewAbility.Duration = DurationField.Text;
+            NewAbility.Uses = (UsesBox.Text == "") ? 0 : Int32.Parse(UsesBox.Text);
 
             NewTrait.Name = NameField.Text;
             NewTrait.Effect = EffectField.Text;

@@ -58,7 +58,29 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto" >
 
                         <StackPanel x:Name="ViewSelectionList" Margin="7,3,3,10" DataContext="{Binding ElementName=_selectedFiles}">
-                            <Button Content="View All Entries" Margin="0,2,0,5" MaxWidth="300" Click="ViewSelectionList_ButtonClick"/>
+                            <Button Content="View All Entries" x:Name="ViewAllButton" Margin="0,2,0,5" MaxWidth="300" Click="ViewSelectionList_ButtonClick"/>
+                            <Border BorderBrush="Black" BorderThickness="1" Width="{Binding ElementName=ViewAllButton, Path=ActualWidth}" Height="{Binding ElementName=ViewAllButton, Path=ActualHeight}" HorizontalAlignment="Center" Margin="0,4,0,5">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,2">Campaigns</TextBlock>
+                            </Border>
+                            <Separator Width="{Binding ElementName=ViewAllButton, Path=ActualWidth}" Margin="0,0,0,5"/>
+                            <ItemsControl x:Name="CampaignButtons">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding Path=.}" Margin="0,2,0,5" MaxWidth="300" Click="ViewSelectionList_ButtonClick"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Border BorderBrush="Black" BorderThickness="1" Width="{Binding ElementName=ViewAllButton, Path=ActualWidth}" Height="{Binding ElementName=ViewAllButton, Path=ActualHeight}" HorizontalAlignment="Center" Margin="0,4,0,5">
+                                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,2">Groups</TextBlock>
+                            </Border>
+                            <Separator Width="{Binding ElementName=ViewAllButton, Path=ActualWidth}" Margin="0,0,0,5"/>
+                            <ItemsControl x:Name="GroupButtons">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Content="{Binding Path=.}" Margin="0,2,0,5" MaxWidth="300" Click="ViewSelectionList_ButtonClick"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                             <!--<Button Content="New Campaign" Margin="0,0,0,5" MaxWidth="300" Click="ViewSelectionList_ButtonClick"/>
                             <Button Content="New Group" Margin="0,0,0,5" MaxWidth="300" Click="ViewSelectionList_ButtonClick"/>-->
                             <!-- Programmatically adds buttons here -->

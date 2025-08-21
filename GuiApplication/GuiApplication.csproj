@@ -6,7 +6,15 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+	  <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+	  <ApplicationIcon>Resources\dm.ico</ApplicationIcon>
+	  
+	  
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\dm.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DnDEntityLibrary\DnDEntityLibrary.csproj" />

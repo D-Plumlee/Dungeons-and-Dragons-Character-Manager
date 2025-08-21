@@ -64,20 +64,16 @@
         <ToolBar Height="60" DockPanel.Dock="Top">
             
             <Button Content="New Entry" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch" Click="NewEntry_Click" x:Name="NewEntryButton"/>
-            <Button Margin="10,0,10,0" Width="80" VerticalAlignment="Stretch" IsEnabled="false">
-                <StackPanel Orientation="Vertical">
-                <TextBlock HorizontalAlignment="Center" TextWrapping="WrapWithOverflow" >Add Entries</TextBlock>
-                    <TextBlock HorizontalAlignment="Center">To View</TextBlock>
-                </StackPanel></Button>
+           
             <Button Content="Delete Entries" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch" x:Name="DeleteEntriesButton" Click="DeleteEntries_Click"/>
             <Button Content="Deselect All" Margin="10,0,10,0" Width="Auto" VerticalAlignment="Stretch" x:Name="DeselectEntriesButton" Click="DeselectEntries_Click"/>
-            <Separator/>
+            <!--<Separator/>
             <StackPanel Orientation="Vertical" Margin="25,0,10,0" IsEnabled="false">
                 <Label Content="Filter By Name:"/>
                 <TextBox  VerticalAlignment="Center" BorderThickness="0.5" BorderBrush="#69000000" Text="" FontSize="14" Width="165" Padding="2,0,2,0" x:Name="SearchFilter" TextChanged="SearchFilter_TextChanged">
 
                 </TextBox>
-            </StackPanel>
+            </StackPanel>-->
         </ToolBar>
 
         <StatusBar DockPanel.Dock="Bottom">

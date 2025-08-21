@@ -35,7 +35,7 @@ public partial class SingleEntryDisplay : UserControl
     public string FileContainedIn
     {
         get => (string)GetValue(FileContainedInProperty);
-        set => SetValue(FileContainedInProperty, value);
+        set => SetValue(FileContainedInProperty, value);    
     }
     public static readonly DependencyProperty FileContainedInProperty =
         DependencyProperty.Register("FileContainedIn",
@@ -56,19 +56,6 @@ public partial class SingleEntryDisplay : UserControl
 
 
     public ObservableCollection<DND::DnDEntityCollection> AllEntriesByFile { get; set; }
-
-    //public DND::DnDEntity EntityEditingCopy
-    //{
-    //    get => (DND::DnDEntity)GetValue(EntityEditingCopyProperty);
-    //    set => SetValue(EntityEditingCopyProperty, value);
-    //}
-    //public static readonly DependencyProperty EntityEditingCopyProperty = 
-    //    DependencyProperty.Register("EntityEditingCopy",
-    //        typeof(DND::DnDEntity),
-    //        typeof(SingleEntryDisplay),
-    //        new PropertyMetadata(null));
-
-    
 
 
     public SingleEntryDisplay()
@@ -279,24 +266,7 @@ public partial class SingleEntryDisplay : UserControl
 
     private void SaveChanges_Click(object sender, RoutedEventArgs e)
     {
-        // popup to confirm save
-        // disable save button
-        // enable edit button
-        // collapse edit bindings
-        // set display bindings to visible
-        // Save copy to (Dictionary or RepresentedEntity or create a member copying function)? (Whichever is the easiest)
-        // Probably need to make a copying function, otherwise the inventory will cause issues
-
-        //if (!newEntry) 
-        //{ 
-        //var result = MessageBox.Show("Save changes to Entry?", "Overwrite?", MessageBoxButton.YesNo);
-        //if(result == MessageBoxResult.No)
-        //    {
-        //        return;
-        //    }
-        //}
-
-        //CopyPartialEntryData(RepresentedEntity, EntityEditingCopy);
+        
 
         
         EditEntry.IsEnabled = true;
@@ -356,21 +326,16 @@ public partial class SingleEntryDisplay : UserControl
         SkillsDisplay.Visibility = Visibility.Visible;
         SkillsEdit.Visibility = Visibility.Collapsed;
 
-        //DexScoreDisplay.UpdateDefaultStyle();
+
     }
 
   
 
     private void EditMode_ButtonClicked(object sender, RoutedEventArgs e)
     {
-        // Disable edit button 
-        // Enable SaveChanges button
-        // Collapse display bindings 
-        // set edit bindings to visible
-        // set Editingcopy to RepresentedEntity.Clone()
+
         EditEntry.IsEnabled = false;
         SaveChanges.IsEnabled = true;
-        //EntityEditingCopy = (DND::DnDEntity)RepresentedEntity.Clone();
         
         switch (RepresentedEntity.Classification)
         {
@@ -495,7 +460,9 @@ public partial class SingleEntryDisplay : UserControl
     {
         CampAndGroupPopup editGroupingWindow = new CampAndGroupPopup()
         {
-            EditingEntry = RepresentedEntity
+            EditingEntry = RepresentedEntity,
+            AllEntries = AllEntriesByFile, 
+            File = FileContainedIn
         };
         editGroupingWindow.ShowDialog();
     }

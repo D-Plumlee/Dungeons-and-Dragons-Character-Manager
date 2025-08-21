@@ -29,17 +29,7 @@ namespace GuiApplication;
 /// Interaction logic for EntriesPage.xaml
 /// </summary>
 
-// public DND::DnDEntity RepresentedEntity 
-//        {
-//            get => (DND::DnDEntity) GetValue(RepresentedEntityProperty);
-//    set => SetValue(RepresentedEntityProperty, value);
-//}
-//public ExpandedEntityComponent ExpandedVersion { get; set; }
-//public static readonly DependencyProperty RepresentedEntityProperty =
-//    DependencyProperty.Register("RepresentedEntity",
-//        typeof(DND::DnDEntity),
-//        typeof(EntityComponent),
-//        new PropertyMetadata(null));
+
 
 
 
@@ -112,24 +102,6 @@ public partial class EntriesPage : UserControl
         AllEntries = new ObservableCollection<DnDEntityCollection>();
             
 
-
-
-        //foreach (var comp in AllEntries)
-        //{
-        //    foreach (var ent in comp.Entities)
-        //    {
-        //        var nextComp = new EntityComponent()
-        //        {
-        //            FileContainedIn = comp.FileContainedIn,
-        //            RepresentedEntity = ent,
-        //            //ActiveFiles = ActiveFiles,
-        //            //ActiveCategory = ActiveCategory
-        //        };
-        //        nextComp.ResetComboBoxes();
-        //        nextComp.SingleEntryEvent += BubbleEntryEvent;
-        //        DisplayComponents.Add(nextComp);
-        //    }
-        //}
         InitializeComponent();
 
         
@@ -168,8 +140,11 @@ public partial class EntriesPage : UserControl
             var s = sender as PopupForms.NewEntryPopup;
             
             s.IsOpen = false;
-
-            if (s.NewEntryName != null && s.NewEntryName != "")
+            if(s.SelectedFile == "" || s.SelectedFile == null)
+            {
+                MessageBox.Show("File not selected. Entry not created.");
+            }
+            else if (s.NewEntryName != null && s.NewEntryName != "")
             {
                 
                 MessageBox.Show($"New entry \"{s.NewEntryName}\" added to {s.SelectedFile}");
@@ -191,7 +166,7 @@ public partial class EntriesPage : UserControl
             }
             else
             {
-                MessageBox.Show("Invalid name. Entry not created");
+                MessageBox.Show("Invalid name. Entry not created.");
                 
             }
 
@@ -296,26 +271,6 @@ public partial class EntriesPage : UserControl
         }
     }
 
-    //public void UpdateCategoryMatchingComponents()
-    //{
-    //    if (ActiveCategory == "View All Entries")
-    //    {
-    //        CategoryMatchingComponents = new ObservableCollection<EntityComponent>(
-    //        from comps
-    //        in DisplayComponents
-    //        where ActiveFiles.Contains(comps.FileContainedIn)
-    //        select comps);
-    //    }
-    //    else
-    //    {
-    //        CategoryMatchingComponents = (ObservableCollection<EntityComponent>)(
-    //            from comps
-    //            in DisplayComponents
-    //            where ((comps.RepresentedEntity.Campaign.Contains(ActiveCategory) || comps.RepresentedEntity.Group.Contains(ActiveCategory)) && ActiveFiles.Contains(comps.FileContainedIn))
-    //            select comps);
-    //    }
-    //    //UpdatePageDisplay();
-    //}
 
     public void setComponents()
     {
@@ -333,28 +288,10 @@ public partial class EntriesPage : UserControl
     }
 
 
-    //public void Nested_BtnClicked(object sender, EventArgs e)
-    //{
-    //    string replacementName; 
-    //    if(sender is EntityComponent ec)
-    //    {
-    //        replacementName = ec.Name.Substring(0,ec.Name.Length-2) + "exc";
-    //        int index = DisplayComponents.IndexOf(ec);
-    //        DisplayComponents[index] = (ExpandedEntityComponent)(ec.SwapComponent());
-    //    }
-    //    else if (sender is ExpandedEntityComponent exc)
-    //    {
-    //        replacementName = exc.Name.Substring(0, exc.Name.Length - 3) + "ec"; 
-    //        int index = DisplayComponents.IndexOf(exc);
-    //        DisplayComponents[index] = (EntityComponent)(exc.SwapComponent());
-    //    }
-    //    UpdateCategoryMatchingComponents();
-    //}
-
     private void SearchFilter_TextChanged(object sender, TextChangedEventArgs e)
     {
 
-        // Brokenright now, implement fix
+        // Does not work with current DataBinding iteration of Entity Component list
 
         //string filter = SearchFilter.Text;
         //if(filter.Length == 0)
@@ -408,28 +345,11 @@ public partial class EntriesPage : UserControl
 
     private void FileManager_Close(object sender, RoutedEventArgs e)
     {
-        //foreach (var itm in ManageFilesSubHead.Items)
-        //{
-        //    string header = itm.Header.ToString();
-        //    bool set = itm.IsChecked;
-        //    if (ActiveFiles.Contains(Directory.GetCurrentDirectory() + $"{System.IO.Path.DirectorySeparatorChar}" + header) && set == false)
-        //    {
-        //        ActiveFiles.Remove(Directory.GetCurrentDirectory() + $"{System.IO.Path.DirectorySeparatorChar}" + header);
-        //    }
-        //    else if (!ActiveFiles.Contains(Directory.GetCurrentDirectory() + $"{System.IO.Path.DirectorySeparatorChar}" + header) && set == true)
-        //    {
-        //        ActiveFiles.Add(Directory.GetCurrentDirectory() + $"{System.IO.Path.DirectorySeparatorChar}" + header);
-        //    }
-        //}
-        //ResetPageCollection();
-        //var temp = AllEntries.Last();
-        //AllEntries.Remove(temp);
-        //AllEntries.Add(temp); // Reimplement ICloneable
+        // Should cause view source to update,
+        // could not figure out how to trigger it.
 
-        //((CollectionViewSource)this.Resources["EntriesFilesValidated"]);
-        
-
-        // Call refresh on the view source?
+        // Updates only the filter, not triggering INotifyPropertyChanged
+        // to run the filter again.
     }
 
     

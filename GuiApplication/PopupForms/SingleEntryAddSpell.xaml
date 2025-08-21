@@ -35,21 +35,21 @@ Title="Add New SpellBook Item" Height="441" Width="439">
             </StackPanel>
             <StackPanel Margin="25,0,0,0" Orientation="Vertical">
                 <Label Content="Effect (Or Description):"/>
-                <TextBox x:Name="EffectField" Width="150" Height="50"/>
+                <TextBox x:Name="EffectField" Width="150" Height="50" TextWrapping="Wrap" AcceptsReturn="True"/>
             </StackPanel>
         </WrapPanel>
 
         <WrapPanel Grid.Row="3" VerticalAlignment="Center" Visibility="Collapsed" HorizontalAlignment="Center" Orientation="Horizontal" x:Name="MagicEffectFields">
             <StackPanel x:Name="AbilityFields" Visibility="Collapsed" Orientation="Vertical" Width="37">
                 <Label Content="Uses:"/>
-                <TextBox MaxLength="2" Width="25" HorizontalContentAlignment="Center" Text="{Binding ElementName=SpellPopup,Path=NewAbility.Uses}"/>
+                <TextBox MaxLength="2" Width="25" x:Name="UsesBox" HorizontalContentAlignment="Center" Text="{Binding ElementName=SpellPopup,Path=NewAbility.Uses}"/>
             </StackPanel>
             <StackPanel x:Name="SpellLevelFields" Visibility="Collapsed" Orientation="Vertical" Width="37">
                 <StackPanel.ToolTip>
                     <TextBlock Text="Spell Level. 0 for cantrips."/>
                 </StackPanel.ToolTip>
                 <Label HorizontalAlignment="Center" Content="lvl:"/>
-                <TextBox MaxLength="1" Width="25" HorizontalContentAlignment="Center" Text="{Binding ElementName=SpellPopup, Path=NewSpell.Level}"/>
+                <TextBox MaxLength="1" Width="25" x:Name="LvlBox" HorizontalContentAlignment="Center" Text="{Binding ElementName=SpellPopup, Path=NewSpell.Level}"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Margin="30,0,20,0">
                 <StackPanel.ToolTip>
