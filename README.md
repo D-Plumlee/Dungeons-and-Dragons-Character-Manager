@@ -6,7 +6,7 @@ This project is my senior project completed for Wilmington University in pursuit
 
 ## Installation 
 
-The project can be ran either with the .sln file and the "DnDEntityLibrary" and "GuiApplication" folders, which contain all the code for the project, or with all the files from the "ApplicationFiles" to run it as an executable. 
+The project can be ran either with the .sln file and the "DnDEntityLibrary" and "GuiApplication" folders, which contain all the code for the project, or with all the files from the "Application-Files" to run it as an executable. 
 
 The main executable file, "GuiApplication.exe", needs to be manually downloaded due to the file size. The TestData1.xml and TestData2.xml files contain example data for a quicker start with the application, but can be omitted if not needed.
 
